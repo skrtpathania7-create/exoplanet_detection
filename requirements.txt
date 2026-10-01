@@ -1,0 +1,7 @@
+lightkurve
+astropy
+numpy
+pandas
+torch
+scikit-learn
+matplotlib
