@@ -42,20 +42,29 @@ Dual-branch CNN (PyTorch) — Astronet-style global + local view classifier
 ## Results
 
 Trained on 232 real KOI examples (118 confirmed planets, 114 false
-positives; 186 train / 46 validation):
+positives; 186 train / 46 validation), with **early stopping** (patience
+of 8 epochs with no validation-loss improvement) and **best-checkpoint
+saving** — the model is evaluated at its best validation-loss epoch, not
+whatever it looks like after training finishes:
 
 | Metric | Score |
 |---|---|
-| Accuracy | 0.717 |
-| Precision | 0.724 |
-| Recall | 0.808 |
+| Accuracy | 0.696 |
+| Precision | 0.714 |
+| Recall | 0.769 |
 
-Confusion matrix (validation set):
+Training stopped itself at epoch 19 (out of a 40-epoch budget); the best
+checkpoint was from **epoch 11**, where validation loss hit its minimum.
+After that point, training loss kept dropping while validation loss
+climbed — a clear, measured overfitting signal, caught automatically
+rather than hidden by only reporting the final epoch.
+
+Confusion matrix (validation set, best checkpoint):
 
 |  | Predicted: False Pos | Predicted: Confirmed |
 |---|---|---|
 | **True: False Pos** | 12 | 8 |
-| **True: Confirmed** | 5 | 21 |
+| **True: Confirmed** | 6 | 20 |
 
 ### BLS baseline sanity check
 
@@ -68,9 +77,10 @@ correct before it ever reaches the CNN.
 ## Limitations & honest notes
 
 - **Dataset size is small for a CNN.** 186 training examples is far
-  below the ~15,000 used in the original Astronet paper. Training loss
-  dropped to ~0.01 while validation accuracy plateaued around 0.72 — a
-  clear sign of overfitting that more data would likely narrow.
+  below the ~15,000 used in the original Astronet paper. The model
+  starts overfitting past epoch 11 — training loss keeps falling while
+  validation loss rises — which early stopping and checkpointing catch
+  automatically, but more data is the real fix for closing that gap.
 - **This is a from-scratch, educational reproduction**, not a
   production-grade detector. It's meant to demonstrate understanding of
   the full pipeline (data access → classical baseline → ML) rather than
